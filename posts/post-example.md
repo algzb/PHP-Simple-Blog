@@ -1,9 +1,9 @@
 ---
 title: "First Blog Post"
 date: 2024-10-21
-categories: [Web Development, Blogging]
-tags: [markdown, bootstrap, webdev]
-slug: "first-blog-post"
+categories: Web Development, Blogging
+tags: markdown, bootstrap, webdev
+slug: first-blog-post
 image: "https://example.com/image1.jpg"
 ---
 
