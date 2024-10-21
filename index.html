@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Blog</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">My Markdown Blog</a>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <div id="post-list" class="row"></div>
+    </main>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const postsFolder = 'posts/';
+        const postFiles = ['post1.md', 'post2.md']; // List all post filenames
+
+        function parseMetadata(content) {
+            const metaMatch = content.match(/^---\n([\s\S]+?)\n---/);
+            if (metaMatch) {
+                const metadata = {};
+                const lines = metaMatch[1].split('\n');
+                lines.forEach(line => {
+                    const [key, value] = line.split(':');
+                    if (key && value) {
+                        metadata[key.trim()] = value.trim();
+                    }
+                });
+                return metadata;
+            }
+            return {};
+        }
+
+        function loadPost(filename) {
+            fetch(postsFolder + filename)
+                .then(response => response.text())
+                .then(text => {
+                    const metadata = parseMetadata(text);
+                    const title = metadata.title || 'Untitled Post';
+                    const date = metadata.date || 'Unknown date';
+                    const categories = metadata.categories || 'Uncategorized';
+                    const slug = metadata.slug || filename.replace('.md', '');  // Fallback to filename if slug is missing
+                    const postHTML = `
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${title}</h5>
+                                    <p class="card-text"><small class="text-muted">${date}</small></p>
+                                    <p class="card-text"><strong>Categories:</strong> ${categories}</p>
+                                    <a href="post.html?slug=${slug}" class="btn btn-primary">Read More</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    document.getElementById('post-list').innerHTML += postHTML;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            postFiles.forEach(post => loadPost(post));
+        });
+    </script>
+</body>
+</html>
