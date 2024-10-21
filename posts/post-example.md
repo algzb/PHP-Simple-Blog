@@ -1,13 +1,13 @@
 ---
-title: "First Blog Post"
+title: "My First Blog Post"
 date: 2024-10-21
-categories: Web Development, Blogging
+categories: Development, PHP
 tags: markdown, bootstrap, webdev
-slug: first-blog-post
-image: "https://example.com/image1.jpg"
+slug: my-first-blog-post
+image: "https://example.com/image.jpg"
 ---
 
-# First Blog Post
+# Welcome to My First Blog Post!
 
 This is the first post on my blog, built with Markdown files and Bootstrap!
 
