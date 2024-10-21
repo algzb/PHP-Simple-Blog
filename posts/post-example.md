@@ -1,5 +1,5 @@
 ---
-title: "My First Blog Post"
+title: My First Blog Post
 date: 2024-10-21
 categories: Development, PHP
 tags: markdown, bootstrap, webdev
