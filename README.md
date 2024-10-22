@@ -18,18 +18,7 @@ Upload files to your PHP server. Add your Markdown Files to the Post and Pages f
 
 ## Add Markdown Metadata
 
-Markdwon files need the folowing metadata before your content. Adapt and make your own:
-
-´---
-title: About Us
-date: 2024-10-21
-categories: Development, PHP
-tags: markdown, bootstrap, webdev
-slug: about-us-now
-image: https://images.pexels.com/photos/2240763/pexels-photo-2240763.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1
-excerpt: Explore the fundamental concepts of digital marketing and how it can impact your business growth.
----
-´
+Markdwon files need some metadata before your content. Check ¨Posts¨ and ¨Pages¨ for examples.
 
 
 ## License
