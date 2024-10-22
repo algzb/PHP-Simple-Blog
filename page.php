@@ -3,9 +3,7 @@ require 'libs/Parsedown.php'; // Include Parsedown manually
 $config = require 'config.php'; // Include Configuration
 
 $Parsedown = new Parsedown(); // Create a new Parsedown instance
-$postsDir = 'posts'; // Directory where markdown posts are located
-$pagesDir = 'pages'; // Directory where static pages are located
-$files = scandir($postsDir); // Get all files in posts directory
+$pagesDir = 'pages'; // Directory where markdown pages are located
 $slug = $_GET['slug'] ?? ''; // Get the slug from the URL
 
 // Function to extract metadata from the markdown files
@@ -23,12 +21,12 @@ function parseMetadata($content) {
     return [];
 }
 
-// Function to find the post by slug
-function findPostBySlug($slug, $postsDir) {
-    $files = scandir($postsDir);
+// Function to find the page by slug
+function findpageBySlug($slug, $pagesDir) {
+    $files = scandir($pagesDir);
     foreach ($files as $file) {
         if (pathinfo($file, PATHINFO_EXTENSION) === 'md') {
-            $content = file_get_contents("$postsDir/$file");
+            $content = file_get_contents("$pagesDir/$file");
             $metadata = parseMetadata($content);
             if (isset($metadata['slug']) && $metadata['slug'] === $slug) {
                 return ['content' => $content, 'metadata' => $metadata];
@@ -38,38 +36,17 @@ function findPostBySlug($slug, $postsDir) {
     return false;
 }
 
-// Function to generate post excerpt
-function generateExcerpt($content) {
-    return strip_tags(substr($content, 0, 150)) . '...';
-}
+$page = findpageBySlug($slug, $pagesDir);
 
-// Function to generate the menu from pages
-function generateMenu($pagesDir) {
-    $menuItems = '';
-    $files = scandir($pagesDir); // Scan the pages directory
-    foreach ($files as $file) {
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'md') {
-            $content = file_get_contents("$pagesDir/$file");
-            $metadata = parseMetadata($content); // Extract metadata
-            $slug = $metadata['slug'] ?? pathinfo($file, PATHINFO_FILENAME);
-            $title = $metadata['title'] ?? ucfirst($slug);
-            $menuItems .= "<li class='nav-item'><a class='nav-link' href='page.php?slug=" . urlencode($slug) . "'>$title</a></li>";
-        }
-    }
-    return $menuItems;
-}
-
-$post = findPostBySlug($slug, $postsDir);
-
-if ($post) {
-    $metadata = $post['metadata']; // Extract metadata
-    $content = preg_replace('/^---(.*?)---/s', '', $post['content']); // Remove metadata block
+if ($page) {
+    $metadata = $page['metadata']; // Extract metadata
+    $content = preg_replace('/^---(.*?)---/s', '', $page['content']); // Remove metadata block
     $htmlContent = $Parsedown->text($content); // Parse markdown content into HTML
 
     // Use default image from config if none is provided in metadata
     $imageUrl = !empty($metadata['image']) ? $metadata['image'] : $config['default_image'];
 } else {
-    $htmlContent = '<p>Post not found.</p>';
+    $htmlContent = '<p>page not found.</p>';
     $imageUrl = $config['default_image'];
 }
 ?>
@@ -79,7 +56,7 @@ if ($post) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($metadata['title'] ?? $config['blog_name']) ?></title>
+    <title><?= htmlspecialchars($metadata['title'] ?? 'page') ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .hero-banner {
@@ -134,37 +111,22 @@ if ($post) {
     </header>
 
     
-<!-- Hero Banner -->
+
+    <!-- Hero Banner -->
     <div class="hero-banner">
         <div class="hero-content">
             <h1><?= htmlspecialchars($metadata['title'] ?? 'Untitled') ?></h1>
             <p><?= htmlspecialchars($metadata['date'] ?? 'Date not available') ?></p>
         </div>
     </div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <!-- Dynamically generated menu items -->
-                    <?= generateMenu($pagesDir); ?>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <div class="container content">
-        <?php if ($post): ?>
+        <?php if ($page): ?>
             <div class="content">
                 <?= $htmlContent ?>
             </div>
         <?php else: ?>
-            <p>Post not found.</p>
+            <p>page not found.</p>
         <?php endif; ?>
 
         <a href="index.php" class="btn btn-primary mt-3">Back to Blog</a>

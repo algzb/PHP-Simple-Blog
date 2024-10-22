@@ -1,14 +1,9 @@
 <?php
 return [
-    'domain' => 'https://cibercultural.com/', // Replace with your actual domain
-    'base_path' => 'supersimpleblog', // Base path to your blog directory
-    'blog_name' => 'My Awesome Blog',
-    'tagline' => 'Insights and Tips on Digital Marketing',
-    'short_name' => 'My Blog',
-    'menu_home' => '/supersimpleblog/index.php', // Home link using base path
-    'menu_about' => '/pages/about.php', // About link
-    'menu_contact' => '/pages/contact.php', // Contact link
-    'menu_blog_posts' => './posts.php', // Blog posts link
+    'domain' => 'example.com/phpsimpleblog', // Replace with your actual domain
+    'blog_name' => 'PHP Simple Blog', // Blog name
+    'tagline' => 'PHP and Markdown Files', //Tagline
+    'short_name' => 'My Blog', //Appears in some areas
     'footer_text' => '&copy; 2024 My Awesome Blog. All Rights Reserved.',
     'privacy_policy_link' => './privacy.php', // Privacy policy link
     'terms_service_link' => './terms.php', // Terms of service link

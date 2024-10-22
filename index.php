@@ -3,6 +3,7 @@ require 'libs/Parsedown.php'; // Include Parsedown manually
 $config = require 'config.php'; // Include Configuration
 
 $postsDir = 'posts'; // Directory where markdown posts are located
+$pagesDir = 'pages'; // Directory where static pages are located
 $files = scandir($postsDir); // Get all files in posts directory
 
 // Function to extract metadata from the markdown files
@@ -24,6 +25,22 @@ function parseMetadata($content) {
 function generateExcerpt($content) {
     return strip_tags(substr($content, 0, 150)) . '...';
 }
+
+// Function to generate the menu from pages
+function generateMenu($pagesDir) {
+    $menuItems = '';
+    $files = scandir($pagesDir); // Scan the pages directory
+    foreach ($files as $file) {
+        if (pathinfo($file, PATHINFO_EXTENSION) === 'md') {
+            $content = file_get_contents("$pagesDir/$file");
+            $metadata = parseMetadata($content); // Extract metadata
+            $slug = $metadata['slug'] ?? pathinfo($file, PATHINFO_FILENAME);
+            $title = $metadata['title'] ?? ucfirst($slug);
+            $menuItems .= "<li class='nav-item'><a class='nav-link' href='page.php?slug=" . urlencode($slug) . "'>$title</a></li>";
+        }
+    }
+    return $menuItems;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,30 +58,25 @@ function generateExcerpt($content) {
         </div>
     </header>
 
+    <!-- Start of Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-        <a class="navbar-brand" href="index.php"><?= $config['short_name'] ?></a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <div class="container">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="<?= $config['menu_home'] ?>">Home</a>
+                        <a class="nav-link" href="index.php">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= $config['menu_about'] ?>">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= $config['menu_contact'] ?>">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= $config['menu_blog_posts'] ?>">Blog Posts</a>
-                    </li>
+                    <!-- Dynamically generated menu items -->
+                    <?= generateMenu($pagesDir); ?>
                 </ul>
             </div>
         </div>
     </nav>
+    <!-- End of Navigation Bar -->
 
     <div class="container mt-5">
         <div class="row">
