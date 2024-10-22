@@ -1,54 +1,5 @@
 <?php
-require 'libs/Parsedown.php'; // Include Parsedown manually
-$config = require 'config.php'; // Include Configuration
-
-$Parsedown = new Parsedown(); // Create a new Parsedown instance
-$postsDir = 'posts'; // Directory where markdown posts are located
-$slug = $_GET['slug'] ?? ''; // Get the slug from the URL
-
-// Function to extract metadata from the markdown files
-function parseMetadata($content) {
-    preg_match('/^---(.*?)---/s', $content, $matches); // Extract metadata block
-    if ($matches) {
-        $lines = explode("\n", trim($matches[1]));
-        $metadata = [];
-        foreach ($lines as $line) {
-            list($key, $value) = explode(':', $line, 2);
-            $metadata[trim($key)] = trim($value);
-        }
-        return $metadata;
-    }
-    return [];
-}
-
-// Function to find the post by slug
-function findPostBySlug($slug, $postsDir) {
-    $files = scandir($postsDir);
-    foreach ($files as $file) {
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'md') {
-            $content = file_get_contents("$postsDir/$file");
-            $metadata = parseMetadata($content);
-            if (isset($metadata['slug']) && $metadata['slug'] === $slug) {
-                return ['content' => $content, 'metadata' => $metadata];
-            }
-        }
-    }
-    return false;
-}
-
-$post = findPostBySlug($slug, $postsDir);
-
-if ($post) {
-    $metadata = $post['metadata']; // Extract metadata
-    $content = preg_replace('/^---(.*?)---/s', '', $post['content']); // Remove metadata block
-    $htmlContent = $Parsedown->text($content); // Parse markdown content into HTML
-
-    // Use default image from config if none is provided in metadata
-    $imageUrl = !empty($metadata['image']) ? $metadata['image'] : $config['default_image'];
-} else {
-    $htmlContent = '<p>Post not found.</p>';
-    $imageUrl = $config['default_image'];
-}
+$config = require '../config.php'; // Correct the path for the config file
 ?>
 
 <!DOCTYPE html>
@@ -56,15 +7,15 @@ if ($post) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($metadata['title'] ?? 'Post') ?></title>
+    <title>Contact Us - <?= $config['blog_name'] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .hero-banner {
             position: relative;
-            background-image: url('<?= htmlspecialchars($imageUrl) ?>');
+            background-image: url('<?= htmlspecialchars($config['default_image']) ?>');
             background-size: cover;
             background-position: center;
-            height: 60vh; /* Adjust this height as necessary */
+            height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -93,10 +44,6 @@ if ($post) {
             font-weight: bold;
         }
 
-        .hero-content p {
-            font-size: 1.2rem;
-        }
-
         .content {
             margin-top: 20px;
         }
@@ -112,7 +59,7 @@ if ($post) {
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="index.php"><?= $config['short_name'] ?></a>
+        
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -125,7 +72,7 @@ if ($post) {
                         <a class="nav-link" href="<?= $config['menu_about'] ?>">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= $config['menu_contact'] ?>">Contact</a>
+                        <a class="nav-link active" href="<?= $config['menu_contact'] ?>">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= $config['menu_blog_posts'] ?>">Blog Posts</a>
@@ -138,21 +85,29 @@ if ($post) {
     <!-- Hero Banner -->
     <div class="hero-banner">
         <div class="hero-content">
-            <h1><?= htmlspecialchars($metadata['title'] ?? 'Untitled') ?></h1>
-            <p><?= htmlspecialchars($metadata['date'] ?? 'Date not available') ?></p>
+            <h1>Contact Us</h1>
         </div>
     </div>
 
     <div class="container content">
-        <?php if ($post): ?>
-            <div class="content">
-                <?= $htmlContent ?>
-            </div>
-        <?php else: ?>
-            <p>Post not found.</p>
-        <?php endif; ?>
+        <h2>Get in Touch</h2>
+        <p>If you have any questions or would like to get in touch, please fill out the form below:</p>
 
-        <a href="index.php" class="btn btn-primary mt-3">Back to Blog</a>
+        <form action="contact_form_handler.php" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Your Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Your Message</label>
+                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
     </div>
 
     <footer class="bg-light text-center py-4">

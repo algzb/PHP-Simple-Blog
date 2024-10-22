@@ -1,16 +1,18 @@
 <?php
-require 'libs/Parsedown.php'; // Include Parsedown without Composer
+require 'libs/Parsedown.php'; // Include Parsedown manually
+$config = require 'config.php'; // Include Configuration
 
-$postsDir = 'posts'; // Directory where markdown files are stored
-$files = scandir($postsDir); // Scan the posts folder for markdown files
+$postsDir = 'posts'; // Directory where markdown posts are located
+$files = scandir($postsDir); // Get all files in posts directory
 
+// Function to extract metadata from the markdown files
 function parseMetadata($content) {
-    preg_match('/^---(.*?)---/s', $content, $matches); // Extract metadata
+    preg_match('/^---(.*?)---/s', $content, $matches); // Extract metadata block
     if ($matches) {
         $lines = explode("\n", trim($matches[1]));
         $metadata = [];
         foreach ($lines as $line) {
-            list($key, $value) = explode(':', $line);
+            list($key, $value) = explode(':', $line, 2);
             $metadata[trim($key)] = trim($value);
         }
         return $metadata;
@@ -18,23 +20,49 @@ function parseMetadata($content) {
     return [];
 }
 
-function generatePostExcerpt($content) {
-    return strip_tags(substr($content, 0, 150)) . '...'; // Basic excerpt generation
+// Function to generate post excerpt
+function generateExcerpt($content) {
+    return strip_tags(substr($content, 0, 150)) . '...';
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Blog</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title><?= $config['blog_name'] ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <header class="bg-primary text-white py-3">
         <div class="container">
-            <a class="navbar-brand" href="#">My Markdown Blog</a>
+            <h1 class="mb-0"><?= $config['blog_name'] ?></h1>
+            <p class="lead"><?= $config['tagline'] ?></p>
+        </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+        <a class="navbar-brand" href="index.php"><?= $config['short_name'] ?></a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="<?= $config['menu_home'] ?>">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $config['menu_about'] ?>">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $config['menu_contact'] ?>">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $config['menu_blog_posts'] ?>">Blog Posts</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -43,17 +71,21 @@ function generatePostExcerpt($content) {
             <?php foreach ($files as $file): ?>
                 <?php if (pathinfo($file, PATHINFO_EXTENSION) === 'md'): ?>
                     <?php
-                    $content = file_get_contents("$postsDir/$file"); // Load markdown file content
+                    $content = file_get_contents("$postsDir/$file");
                     $metadata = parseMetadata($content); // Extract metadata
-                    $slug = $metadata['slug'] ?? pathinfo($file, PATHINFO_FILENAME); // Fallback slug
+                    $slug = $metadata['slug'] ?? pathinfo($file, PATHINFO_FILENAME);
                     ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="<?= $metadata['image'] ?? 'default.jpg' ?>" class="card-img-top" alt="<?= $metadata['title'] ?>">
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                        <a href="post.php?slug=<?= $slug ?>"><img src="<?= $metadata['image'] ?? $config['default_image'] ?>" class="card-img-top" alt="<?= $metadata['title'] ?>"></a>
                             <div class="card-body">
                                 <h5 class="card-title"><?= $metadata['title'] ?></h5>
                                 <p class="card-text"><small class="text-muted"><?= $metadata['date'] ?></small></p>
-                                <p class="card-text"><?= generatePostExcerpt($content) ?></p>
+                                <?php if (!empty($metadata['excerpt'])): ?>
+                                    <p class="card-text"><?= $metadata['excerpt'] ?></p>
+                                <?php else: ?>
+                                    <p class="card-text"><?= generateExcerpt($content) ?></p>
+                                <?php endif; ?>
                                 <a href="post.php?slug=<?= $slug ?>" class="btn btn-primary">Read More</a>
                             </div>
                         </div>
@@ -62,5 +94,17 @@ function generatePostExcerpt($content) {
             <?php endforeach; ?>
         </div>
     </div>
+
+    <footer class="bg-light text-center py-4">
+        <div class="container">
+            <p class="mb-0"><?= $config['footer_text'] ?></p>
+            <p>
+                <a href="<?= $config['privacy_policy_link'] ?>">Privacy Policy</a> | 
+                <a href="<?= $config['terms_service_link'] ?>">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

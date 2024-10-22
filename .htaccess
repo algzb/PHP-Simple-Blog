@@ -1,0 +1,9 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Redirect to index.php if no specific page is requested
+RewriteRule ^$ index.php [L]
+
+# Handle requests for pages without the .php extension
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^pages/(.*)$ pages/$1.php [L]
