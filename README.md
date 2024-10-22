@@ -1,6 +1,6 @@
-# Simple Markdown Blog
+# Simple PHP Markdown Blog 
 
-Welcome to my personal project: a simple blog built with PHP that uses Markdown to create and display posts! 🎉 This project is perfect for anyone who wants to get started with blogging without the complexities of a full-fledged CMS.
+A simple blog built with PHP that uses Markdown to create and display posts! 🎉 This project is perfect for anyone who wants to get started with blogging without the complexities of a full-fledged CMS.
 
 ## Main Page
 ![Screenshot](https://i.imgur.com/UwiUGOH.png) 
@@ -20,12 +20,7 @@ Welcome to my personal project: a simple blog built with PHP that uses Markdown 
 
 ## How to Use
 
-Upload files to your PHP server. Add your Markdown Files to the Post and Pages files. Check the config file. Enjoy a cup of coffee.
-
-## Add Markdown Metadata
-
-Markdwon files need some metadata before your content. Check ¨Posts¨ and ¨Pages¨ for examples.
-
+Upload your Markdown files to your PHP server (Post or Pages files). Markdwon files need some metadata before your content. Check ¨Posts¨ and ¨Pages¨ for examples. Adjust the config file. Enjoy a cup of coffee.
 
 ## License
 This project is licensed under the MIT License. Feel free to use, modify, and distribute it as you like!
