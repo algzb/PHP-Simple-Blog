@@ -2,7 +2,13 @@
 
 Welcome to my personal project: a simple blog built with PHP that uses Markdown to create and display posts! 🎉 This project is perfect for anyone who wants to get started with blogging without the complexities of a full-fledged CMS.
 
-![Screenshot Placeholder](screenshot.png) <!-- Replace with your screenshot -->
+## Main Page
+![Screenshot](https://i.imgur.com/UwiUGOH.png) 
+
+## Post Page
+
+![Screenshot](https://i.imgur.com/MX3ONnd.png) 
+
 
 ## Features
 
